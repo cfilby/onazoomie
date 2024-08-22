@@ -1,3 +1,5 @@
+#define LOGGING 1
+
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <ArduinoHttpClient.h>
@@ -8,9 +10,9 @@
 #define LED 13
 #define POLLING_DELAY 15000
 
+
 WiFiClientSecure wifiClient;
-HttpClient httpClient(wifiClient, "zoom.us", 443);
-ZoomAPI zoomApi(httpClient, ACCOUNT_ID, CLIENT_ID, CLIENT_SECRET);
+ZoomAPI zoomApi(wifiClient, ZOOM_ACCOUNT_ID, ZOOM_CLIENT_ID, ZOOM_CLIENT_SECRET);
 
 void setup() {
   pinMode(LED, OUTPUT);
@@ -21,8 +23,8 @@ void setup() {
 
   WiFi.setHostname("esp32-devkit");
   WiFi.mode(WIFI_STA);
-  WiFi.begin(SECRET_WIFI_SSID, SECRET_WIFI_PASSWORD);
-  Serial.println("\nConnectingi WiFi");
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  Serial.printf("\nConnecting to WiFi Network: %s\n", WIFI_SSID);
 
   while (WiFi.status() != WL_CONNECTED) {
     Serial.print(".");
@@ -30,16 +32,15 @@ void setup() {
   }
 
   Serial.println("\nConnected to the WiFi network");
-  Serial.print("Local ESP32 IP: ");
-  Serial.println(WiFi.localIP());
+  Serial.printf("Local ESP32 IP: %s\n", WiFi.localIP().toString());
 
-  // TODO: Confirm this is needed
   wifiClient.setInsecure();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  Serial.printf("loopStart: Free Heap: %d\n", ESP.getFreeHeap());
   Serial.println("Checking User Presence");
   zoomApi.getUserPresence(userMe);
+  Serial.println();
   delay(POLLING_DELAY);
 }

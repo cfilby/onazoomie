@@ -9,10 +9,11 @@ const String userMe = "me";
 
 class ZoomAPI {
 public:
-  ZoomAPI(HttpClient _http, String _accountId, String _clientId, String _clientSecret);
+  ZoomAPI(Client& _networkClient, String _accountId, String _clientId, String _clientSecret);
   void getUserPresence(String userId);
 
 private:
+  Client& networkClient;
   HttpClient http;
   String accountId;
   String clientId;
